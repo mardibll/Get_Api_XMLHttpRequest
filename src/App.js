@@ -1,25 +1,83 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Table } from "react-bootstrap";
+import Loading from "react-loading";
+export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [account, setAccount] = useState([]);
+  console.log(account);
+  useEffect(() => {
+    setTimeout(() => {
+      fetchData("https://jsonplaceholder.typicode.com/users", handleData);
+    }, 2000);
+  }, []);
 
-function App() {
+  const fetchData = (url, cb) => {
+    let xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        cb(JSON.parse(xhr.responseText));
+      }
+    };
+    xhr.open("GET", url);
+    xhr.send();
+  };
+
+  const handleData = (data) => {
+    setAccount(data);
+    setIsLoading(false)
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div>
+      {isLoading ? (
+        <div
+          style={{
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          <Loading type="spin" color="green" height={20} width={20} />
+          <h5 style={{ color: "green" }}>Loading....</h5>
+        </div>
+      ) : (
+        <div>
+
+        <h4>List Of Users</h4>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th> Name</th>
+              <th>Username</th>
+              <th> Email</th>
+              <th> Address</th>
+              <th> Company</th>
+            </tr>
+          </thead>
+          {account.map((i, x) => {
+            return (
+              <tbody key={x}>
+                <tr>
+                  <td>{i.id}</td>
+                  <td>{i.name}</td>
+                  <td>{i.username}</td>
+                  <td>{i.email}</td>
+                  <td>
+                    {i.address.street}
+                    {i.address.suite}
+                    {i.address.city}
+                  </td>
+                  <td>{i.company.name}</td>
+                </tr>
+              </tbody>
+            );
+          })}
+        </Table>
+      </div>
+      )}
     </div>
   );
 }
-
-export default App;
