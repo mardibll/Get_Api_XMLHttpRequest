@@ -30,6 +30,7 @@ export default function App() {
 
   return (
     <div>
+      <p>HALLO</p>
       {isLoading ? (
         <div
           style={{
